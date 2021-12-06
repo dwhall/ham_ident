@@ -1,52 +1,5 @@
 """
 Copyright 2017 Dean Hall.  See LICENSE for details.
-
-This module contains the HamIdent class which has methods to generate
-a self-signed X.509 certificate and asymmetric keypairs which are
-used to create various kinds of personal and device credential files.
-The personal credential is tailored to amateur radio operators in that
-the operator's callsign is put in the X.509 certificate's pseudonum field.
-
-A personal credential must be created first because device credentials
-re-use the callsign information from the personal credential to create
-a device identifier of the form::
-
-    <callsign>-###
-
-The process for creating a personal credential is as follows.
-First, a special keypair is made.  Elleptic Curve Cryptography
-is used to repeatedly generate asymmetric key pairs until
-a public key is found whose hash starts with 0xFC, the personal prefix.
-A self-signed X.509 certificate is created from this key pair.
-The keypair may be used for cryptographic authentication.
-The hash of the public key (that begins with 0xFC) may
-be used to construct sufficiently unique network address
-such as a mobile, `unique-local`_ IPv6 address.
-
-.. _unique-local: https://en.wikipedia.org/wiki/Unique_local_address
-
-Similarly, credential files may be created for individual devices.
-Such credentials have a unique asymmetric key pair,
-but this time the hash of the public key starts with 0xFD,
-the device prefix.
-
-At this time, X.509 certificates are not created for devices
-because it is easier to process the credentials from a .json file.
-
-WARNING: This tool does not protect the private key!
-You should not use this keypair for meaningful cryptography!
-In this project, we are using the keypair to authenticate
-messages for recreational/amateur radio communication.
-
-Dependencies::
-
-    pip install asn1
-    pip install cryptography
-
-References:
-    https://cryptography.io/en/latest/
-    https://github.com/andrivet/python-asn1/blob/master/examples/dump.py
-    https://en.wikipedia.org/wiki/Unique_local_address
 """
 
 import datetime
@@ -66,7 +19,8 @@ from cryptography.x509.oid import NameOID
 from . import app_data
 
 
-TWO_YEARS = 2 * 365  # X.509 certificate duration in days
+CERT_DURATION = 2 * 365     # X.509 certificate duration in days
+APP_NAME = "ham_ident"      # Application name (for path to persistent storage)
 
 
 class HamIdentError(Exception):
@@ -74,7 +28,7 @@ class HamIdentError(Exception):
 
 
 class HamIdent():
-    def __init__(self, app_name="HamIdent", cert_duration=TWO_YEARS):
+    def __init__(self, app_name=APP_NAME, cert_duration=CERT_DURATION):
         self.app_path = app_data.get_app_data_path(app_name)
         self.cert_duration = cert_duration
 
