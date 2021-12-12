@@ -1,9 +1,9 @@
-import setuptools
+from setuptools import setup
 
 with open("README.rst", "r") as f:
     long_description = f.read()
 
-setuptools.setup(
+setup(
     name="ham_ident",
     version="0.0.1",
     author="Dean Hall",
@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/dwhall/ham_ident",
-    packages=setuptools.find_packages(),
+    packages=["ham_ident"],
     python_requires=">=3.5",
     classifiers=[
         "Programming Language :: Python :: 3.5",
