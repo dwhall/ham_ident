@@ -28,7 +28,7 @@ class TestIdentity(unittest.TestCase):
 
     def test_attr_empty(self):
         i = Identity(givenName="Given", emailAddress="given@example.com", surname="Last")
-        self.assertEquals(i.countryName, "")
+        self.assertEqual(i.countryName, "")
 
     def test_attr(self):
         i = Identity(givenName="Given", emailAddress="given@example.com", surname="Last")
@@ -57,14 +57,14 @@ class TestHamIdentity(unittest.TestCase):
             h = HamIdentity()
 
     def test_ctor(self):
-        h = HamIdentity(givenName="Given", emailAddress="given@example.com")
+        h = HamIdentity(givenName="Given", emailAddress="given@example.com", pseudonym="EX4MPL")
 
     def test_surname_exception(self):
         with self.assertRaises(IdentityError):
             h = HamIdentity(surname="Last")
 
     def test_surname(self):
-        h = HamIdentity(givenName="Given", emailAddress="given@example.com", surname="Last")
+        h = HamIdentity(givenName="Given", emailAddress="given@example.com", pseudonym="EX4MPL", surname="Last")
 
     def test_pseudonym_exception(self):
         with self.assertRaises(IdentityError):
@@ -74,11 +74,11 @@ class TestHamIdentity(unittest.TestCase):
         h = HamIdentity(givenName="Given", emailAddress="given@example.com", pseudonym="EX4MPL")
 
     def test_attr_empty(self):
-        h = HamIdentity(givenName="Given", emailAddress="given@example.com", surname="Last")
-        self.assertEquals(h.countryName, "")
+        h = HamIdentity(givenName="Given", emailAddress="given@example.com", surname="Last", pseudonym="EX4MPL")
+        self.assertEqual(h.countryName, "")
 
     def test_attr(self):
-        h = HamIdentity(givenName="Given", emailAddress="given@example.com", surname="Last")
+        h = HamIdentity(givenName="Given", emailAddress="given@example.com", surname="Last", pseudonym="EX4MPL")
         self.assertEqual(h.givenName, "Given")
 
     def test_all(self):

@@ -26,31 +26,30 @@ class Identity():
     }
 
     def __init__(self, **kwargs):
-        """The kwargs to this constructor become the identity fields.
-        Accepts keys: surname givenName callsign emailAddress country province
-        postalcode.  The surname and emailAddress fields are required.
+        """The kwargs to this constructor become the identity fields
+        Optional keys: surname stateOrProvinceName countryName postalCode
+        Required keys: givenName emailAddress
         """
-        # Ensure kwargs has only keys whose names are expected OID names
-        expected_oids = self.REQUIRED_OIDS.union(self.OPTIONAL_OIDS)
-        oid_names = [getattr(oid, "_name") for oid in expected_oids]
-        field_names = kwargs.keys()
-        for k in field_names:
-            if k not in oid_names:
-                raise IdentityError(
-                    "Invalid OID name: %s. Expected a name from: %s"
-                    % (k, str(oid_names)))
+        all_field_names = [getattr(oid, "_name") for oid in self.REQUIRED_OIDS.union(self.OPTIONAL_OIDS)]
+        required_field_names = [getattr(oid, "_name") for oid in self.REQUIRED_OIDS]
+        arg_names = kwargs.keys()
 
-        # Ensure kwargs has the required keys
-        if "givenName" not in field_names or "emailAddress" not in field_names:
-            raise IdentityError("Missing a required field: givenName or emailAddress")
+        # Ensure kwargs has only keys whose names are expected OID names
+        for arg_name in arg_names:
+            if arg_name not in all_field_names:
+                raise IdentityError("Invalid OID name: %s. Expected a name from: %s"
+                                    % (arg_name, str(all_field_names)))
+
+        # Ensure kwargs has all the required keys
+        for required_field_name in required_field_names:
+            if required_field_name not in arg_names:
+                raise IdentityError("Missing a required field: %s"
+                                    % required_field_name)
 
         self._id_fields = kwargs
 
     def __getattr__(self, field_name):
-        ret_val = self._id_fields.get(field_name, "")
-        if ret_val is None:
-            raise IdentityError("Field %s not present" % field_name)
-        return ret_val
+        return self._id_fields.get(field_name, "")
 
 
 class HamIdentity(Identity):
