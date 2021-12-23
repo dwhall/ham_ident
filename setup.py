@@ -24,4 +24,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Topic :: Communications :: Ham Radio",
     ],
+    entry_points={
+        'console_scripts': []
+    }
 )

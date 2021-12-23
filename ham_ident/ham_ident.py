@@ -32,45 +32,6 @@ class HamIdent():
         self.app_path = app_data.get_app_data_path(app_name)
         self.cert_duration = cert_duration
 
-
-    @staticmethod
-    def cert_file_exists():
-        try:
-            cert_fn = HamIdent._get_cert_fn()
-            return os.path.exists(cert_fn)
-        except AssertionError:
-            return False
-
-
-    @staticmethod
-    def get_info_from_cert():
-        person_info = {}
-        fn = HamIdent._get_cert_fn()
-        with open(fn, "rb") as f:
-            pem_data = f.read()
-            cert = x509.load_pem_x509_certificate(pem_data, default_backend())
-            for fld_str, oid in (("cmn_name", NameOID.COMMON_NAME),
-                                 ("callsign", NameOID.PSEUDONYM),
-                                 ("email", NameOID.EMAIL_ADDRESS),
-                                 ("country", NameOID.COUNTRY_NAME),
-                                 ("province", NameOID.STATE_OR_PROVINCE_NAME),
-                                 ("postalcode", NameOID.POSTAL_CODE)):
-                person_info[fld_str] = \
-                    cert.subject.get_attributes_for_oid(oid)[0].value
-        return person_info
-
-    @staticmethod
-    def _get_cert_fn(app_name="HamIdent"):
-        app_path = app_data.get_app_data_path(app_name)
-        result = []
-        for root, _, files in os.walk(app_path):
-            for fn in files:
-                if fnmatch.fnmatch(fn, "*cert.pem"):
-                    result.append(os.path.join(root, fn))
-        assert len(result) == 1, "Expected one cert file"
-        return result[0]
-
-
     @staticmethod
     def get_info_from_json_cred(app_name):
         filenames = HamIdent._get_cred_filenames(app_name)
@@ -83,17 +44,6 @@ class HamIdent():
             return json_info
         else:
             raise HamIdentError("Expected one cred file")
-
-    @staticmethod
-    def _get_cred_filenames(app_name):
-        app_path = app_data.get_app_data_path(app_name)
-        result = []
-        for root, _, files in os.walk(app_path):
-            for fn in files:
-                if fnmatch.fnmatch(fn, "*_cred.json"):
-                    result.append(os.path.join(root, fn))
-        return result
-
 
     @staticmethod
     def get_addr(app_name, nmbr_bits):
