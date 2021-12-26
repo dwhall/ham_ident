@@ -6,17 +6,19 @@ Copyright 2021 Dean Hall.  See LICENSE for details.
 from cryptography.x509.oid import NameOID
 
 
-class IdentityError(Exception):
+class HamIdentityError(Exception):
     pass
 
 
-class Identity():
-    """Identity defines the sets of required and optional fields
-    that will be used in the x509 certificate.
+class HamIdentity():
+    """HamIdentity defines a set of fields to use in an x509 certificate.
+    The required fields are: givenName, emailAddress, pseudonym.
+    The optional fields are: surname, stateOrProvinceName, countryName, postcalCode.
     """
     REQUIRED_OIDS = {
         NameOID.GIVEN_NAME,
-        NameOID.EMAIL_ADDRESS
+        NameOID.EMAIL_ADDRESS,
+        NameOID.PSEUDONYM
     }
     OPTIONAL_OIDS = {
         NameOID.SURNAME,
@@ -30,29 +32,32 @@ class Identity():
         Optional keys: surname stateOrProvinceName countryName postalCode
         Required keys: givenName emailAddress
         """
-        all_field_names = [getattr(oid, "_name") for oid in self.REQUIRED_OIDS.union(self.OPTIONAL_OIDS)]
-        required_field_names = [getattr(oid, "_name") for oid in self.REQUIRED_OIDS]
-        arg_names = kwargs.keys()
-
         # Ensure kwargs has only keys whose names are expected OID names
+        all_field_names = [getattr(oid, "_name") for oid in self.REQUIRED_OIDS.union(self.OPTIONAL_OIDS)]
+        arg_names = kwargs.keys()
         for arg_name in arg_names:
             if arg_name not in all_field_names:
-                raise IdentityError("Invalid OID name: %s. Expected a name from: %s"
+                raise HamIdentityError("Invalid OID name: %s. Expected a name from: %s"
                                     % (arg_name, str(all_field_names)))
 
-        # Ensure kwargs has all the required keys
+        required_field_names = [getattr(oid, "_name") for oid in self.REQUIRED_OIDS]
         for required_field_name in required_field_names:
+
+            # Ensure kwargs has all the required keys
             if required_field_name not in arg_names:
-                raise IdentityError("Missing a required field: %s"
+                raise HamIdentityError("Missing a required field: %s"
                                     % required_field_name)
 
-        self._id_fields = kwargs
+            # Ensure required field is not empty
+            if kwargs[required_field_name] == "":
+                raise HamIdentityError("Required field is empty: %s"
+                                 % required_field_name)
+
+        self.__dict__["_id_fields"] = kwargs
 
     def __getattr__(self, field_name):
         return self._id_fields.get(field_name, "")
 
-
-class HamIdentity(Identity):
-    """HamIdentity uses the pseudonym field to hold the amateur radio callsign."""
-    REQUIRED_OIDS = Identity.REQUIRED_OIDS.copy()
-    REQUIRED_OIDS.add(NameOID.PSEUDONYM)
+    def __setattr__(self, name, value):
+        raise HamIdentityError("'%s' object does not support item assignment"
+                        % self.__class__.__name__)
