@@ -16,12 +16,12 @@ callsign and generates a special asymmetric keypair to assist with `cryptographi
 .. _`amateur radio`: https://life.itu.int/radioclub/ars.htm
 .. _`cryptographic addressing`: https://en.wikipedia.org/wiki/Cryptographically_Generated_Address
 
-WARNING: This tool does not protect the private key!
-You should not use this credential for meaningful cryptographic security!
-In this project, we are using the credential to authenticate
-messages for amateur radio communication.
+WARNING: This tool should not be used for meaningful cryptography!
+In this project, we are using the keypair to sign certificates and
+authenticate messages for recreational/amateur radio communication.
 
-References:
+References
+----------
 
 - https://cryptography.io/en/latest/
 - https://github.com/andrivet/python-asn1/blob/master/examples/dump.py

@@ -1,2 +1,2 @@
-from .cred import HamCredentialError, HamCredential, HamJsonCredential
+from .cred import HamCredentialBuilder, HamCredential, HamCredentialError, HamJsonCredential
 from .ident import HamIdentityError, HamIdentity
